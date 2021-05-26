@@ -79,5 +79,13 @@ async def on_command_error(ctx, error):
 async def ping(ctx):
     await ctx.send('pong')
 
+@bot.command()
+async def command(ctx):
+    embed = Embed(color=0x0000FF, title="command", description='コマンド一覧')
+    embed.add_field(name="lobby", value="マッチロビーを作成",inline=False)
+    embed.add_field(name="full", value="ロビーを満員表示にする。",inline=False)
+    embed.add_field(name="ready", value="ロビーを空席表示にする",inline=False)
+    embed.add_field(name="close", value="自分のロビーを閉じる。",inline=False)
+    await ctx.send(embed=embed)
 
 bot.run(token)
