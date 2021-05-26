@@ -74,11 +74,49 @@ async def on_command_error(ctx, error):
     error_msg = ''.join(traceback.TracebackException.from_exception(orig_error).format())
     await ctx.send(error_msg)
 
-
 @bot.command()
 async def ping(ctx):
     await ctx.send('pong')
 
+#自分のロビーを作る
+@bot.command()
+async def lobby(ctx):
+    lm = LobbyManager(ctx.message.guild)
+    if(lm.exists_lobby(ctx.message.author.name)):
+        await ctx.send("lobby is exists.")
+        return
+    lobby = await lm.create_lobby(ctx.message.author.name)
+    embed = Embed(color=0x00FF00, title='READY', description='create lobby #' + ctx.message.author.name)
+    await lobby.send(embed=embed)
+
+#full表示
+@bot.command()
+async def full(ctx):
+    if(is_my_lobby(ctx.message.channel, ctx.message.author)):
+        lm = LobbyManager(ctx.message.guild)
+        await lm.set_status(ctx.message.author.name, "full")
+        embed = Embed(color=0xFF0000, title='FULL', description='status changed.')
+        await ctx.send(embed=embed)
+
+#ready表示に切り替え
+@bot.command()
+async def ready(ctx):
+    if(is_my_lobby(ctx.message.channel, ctx.message.author)):
+        lm = LobbyManager(ctx.message.guild)
+        await lm.set_status(ctx.message.author.name, "ready")
+        embed = Embed(color=0x00FF00, title='READY', description='status changed.')
+        await ctx.send(embed=embed)
+        
+        
+#自分のロビーで実行されていたら、ロビーを閉じる
+@bot.command()
+async def close(ctx):
+    if(is_my_lobby(ctx.message.channel, ctx.message.author)):
+    #if(without_status(ctx.message.channel.name)==ctx.message.author.name):
+        lm = LobbyManager(ctx.message.guild)
+        await lm.close_lobby(ctx.message.author.name)
+    
+    
 @bot.command()
 async def command(ctx):
     embed = Embed(color=0x0000FF, title="command", description='コマンド一覧')
